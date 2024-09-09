@@ -7,7 +7,7 @@ const home = () => {
     firstName: "somapti",
   };
   return (
-    <section className="home">
+    <section className="home ">
       <div className="home-content">
         <header className="home-header">
           <HeaderBox
