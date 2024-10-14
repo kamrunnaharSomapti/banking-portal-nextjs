@@ -1,28 +1,33 @@
 "use client";
 import Image from "next/image";
-import { FormProvider, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-
+import { Form } from "@/components/ui/form";
 import Link from "next/link";
 import { useState } from "react";
 import CustomInput from "./CustomInput";
 import { authformSchema } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 const AuthForm = ({ type }: { type: string }) => {
   const [user, setUser] = useState(null);
+  const [isloading, setIsLoading] = useState(false);
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof authformSchema>>({
-    resolver: zodResolver(authformSchema),
+    // resolver: zodResolver(authformSchema),
     defaultValues: {
       email: "",
-      password: "sss",
+      password: "",
     },
   });
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof authformSchema>) {
+    console.log("clcik");
+    setIsLoading(true);
     console.log(values);
+    setIsLoading(false);
   }
 
   return (
@@ -52,8 +57,8 @@ const AuthForm = ({ type }: { type: string }) => {
       </header>
       {!user ? (
         <>
-          <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 ">
               <CustomInput
                 control={form.control}
                 name="email"
@@ -66,9 +71,36 @@ const AuthForm = ({ type }: { type: string }) => {
                 label="password"
                 placeholder="enter your password"
               ></CustomInput>
-              <Button type="submit">Submit</Button>
+
+              <div className="flex flex-col">
+                <Button type="submit" disabled={isloading} className="form-btn">
+                  {isloading ? (
+                    <>
+                      <Loader2 className="animate-spin" size={20} />
+                      &nbsp;Loading...
+                    </>
+                  ) : type === "sign-in" ? (
+                    "Sign In"
+                  ) : (
+                    "Sign Up"
+                  )}
+                </Button>
+              </div>
             </form>
-          </FormProvider>
+          </Form>
+          <footer className="flex mx-auto">
+            <p>
+              {type === "sign-in"
+                ? "Don't have an account?"
+                : "already have an acount?"}
+            </p>
+            <Link
+              href={type === "sign-in" ? "sign-up" : "/sign-in"}
+              className="form-link"
+            >
+              {type === "sign-in" ? "Sign up" : "Sign in"}
+            </Link>
+          </footer>
         </>
       ) : (
         <div className="flex flex-col gap-4">
